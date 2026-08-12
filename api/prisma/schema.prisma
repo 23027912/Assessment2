@@ -1,0 +1,38 @@
+// Prisma schema for the RSS Server
+// Provider: PostgreSQL (runs as a separate service in docker-compose)
+
+generator client {  
+  provider      = "prisma-client-js"  // FIXED: Changed to standard JavaScript client
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] // REMOVED the custom output line completely
+}
+
+datasource db {
+  provider = "postgresql"    
+}
+
+// Core entity: a single RSS feed item / post
+model Feed {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  content     String   @db.Text
+  summary     String?
+  imageUrl    String?
+  link        String?
+  category    String?
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([publishedAt])
+  @@index([author])
+}
+
+// Single-row counter used by the /api/count operational endpoint.
+// Incremented by the requestCounter helper on every API call.
+model RequestStat {
+  id        Int      @id @default(autoincrement())
+  route     String   @unique
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}

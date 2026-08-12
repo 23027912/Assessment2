@@ -1,0 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Theme tokens ---- */
+/* Dark is the fallback (no data-theme set yet, e.g. before hydration) */
+:root,
+[data-theme="dark"] {
+  --color-bg: #0b0e0d;
+  --color-surface: #141a18;
+  --color-surface-2: #1c2420;
+  --color-border: #2a322d;
+  --color-ink: #e8edea;
+  --color-muted: #8b958f;
+  --color-signal: #6ee7a8;
+  --color-alert: #ff6b4a;
+  --grid-line: rgba(255, 255, 255, 0.02);
+  --glow: rgba(110, 231, 168, 0.06);
+}
+
+[data-theme="light"] {
+  --color-bg: #f5f3ee;
+  --color-surface: #ffffff;
+  --color-surface-2: #edeae1;
+  --color-border: #d9d4c8;
+  --color-ink: #171f1b;
+  --color-muted: #6a7268;
+  --color-signal: #12855a;
+  --color-alert: #c23f22;
+  --grid-line: rgba(0, 0, 0, 0.025);
+  --glow: rgba(18, 133, 90, 0.07);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  background-image:
+    radial-gradient(circle at 20% -10%, var(--glow), transparent 40%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px);
+  background-size: auto, 100% 28px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-bg);
+}
+
+.ticker-track {
+  animation: ticker 22s linear infinite;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
