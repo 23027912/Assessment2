@@ -44,8 +44,8 @@ export default function StatusTicker() {
     `DB ${health?.database ?? "..."}`,
     `LATENCY ${health?.latencyMs !== undefined ? `${health.latencyMs}ms` : "--"}`,
     `UPTIME ${health?.uptimeSeconds !== undefined ? `${Math.floor(health.uptimeSeconds)}s` : "--"}`,
-    `REQUESTS ${stats?.totalRequests ?? "--"}`,
-    `FEEDS ${stats?.totalFeeds ?? "--"}`,
+    `REQUESTS ${stats?.requests.total ?? "--"}`,
+    `FEEDS ${stats?.feeds.total ?? "--"}`,
   ];
 
   const doubled = [...items, ...items];

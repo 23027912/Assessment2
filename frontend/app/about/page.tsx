@@ -1,6 +1,5 @@
-// TODO: keep these in sync with components/Footer.tsx before submission.
-const STUDENT_NAME = "[Your Full Name]";
-const STUDENT_NUMBER = "[Your Student Number]";
+const STUDENT_NAME = "Sunita Yadav";
+const STUDENT_NUMBER = "23027912";
 
 export default function AboutPage() {
   return (
@@ -56,20 +55,22 @@ export default function AboutPage() {
             WALKTHROUGH VIDEO
           </p>
           {/*
-            TODO: replace this placeholder with your actual walkthrough video before
-            submission — e.g. an <iframe> embed (YouTube/unlisted) or a <video> tag
-            pointing at a file in /public. Example:
+            Served from public/Sunita_Yadav_23027912.mp4 — Next.js serves
+            everything in /public from the site root, so that file becomes
+            the URL /Sunita_Yadav_23027912.mp4 automatically. The browser
+            renders its native video player inside the iframe.
 
-            <video controls className="w-full rounded-sm border border-border">
-              <source src="/walkthrough.mp4" type="video/mp4" />
-            </video>
+            NOTE: assumed .mp4 below. If your file has a different extension
+            (.mov, .webm, etc.), update the src to match.
           */}
-          <div className="aspect-video w-full border border-dashed border-border rounded-sm flex items-center justify-center text-center px-6">
-            <p className="font-mono text-xs text-muted">
-              Embed your 3–8 minute walkthrough video here
-              <br />
-              (showing your student ID, face and voice, per the brief).
-            </p>
+          <div className="aspect-video w-full rounded-sm border border-border overflow-hidden bg-surface">
+            <iframe
+              className="w-full h-full"
+              src="/Sunita_Yadav_23027912.mp4"
+              title="Project walkthrough video"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+            />
           </div>
         </section>
       </div>

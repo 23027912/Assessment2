@@ -31,7 +31,16 @@ export type HealthStatus = {
 };
 
 export type CountStats = {
-  totalRequests: number;
-  totalFeeds: number;
-  byRoute: { route: string; count: number }[];
+  success: boolean;
+  generatedAt: string;
+  requests: {
+    total: number;
+    byRoute: { route: string; count: number }[];
+  };
+  feeds: {
+    total: number;
+    byCategory: { category: string; count: number }[];
+    byAuthor: { author: string; count: number }[];
+    latest: { id: string; title: string; publishedAt: string } | null;
+  };
 };

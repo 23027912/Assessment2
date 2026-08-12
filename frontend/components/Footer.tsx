@@ -1,7 +1,7 @@
 // TODO: replace the placeholders below with your real name and student number
 // before submission — the rubric requires both in the footer.
-const STUDENT_NAME = "[Your Full Name]";
-const STUDENT_NUMBER = "[Your Student Number]";
+const STUDENT_NAME = "Sunita Yadav";
+const STUDENT_NUMBER = "23027912";
 
 export default function Footer() {
   return (
