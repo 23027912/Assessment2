@@ -31,7 +31,7 @@ export default function FeedCard({ feed, index, compact = false, onEdit, onDelet
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={feed.imageUrl}
-          alt=""
+          alt={feed.title}
           className="sm:w-40 w-full h-40 sm:h-auto object-cover border-b sm:border-b-0 sm:border-r border-border"
         />
       )}
