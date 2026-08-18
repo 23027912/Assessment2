@@ -5,7 +5,7 @@ import StatusTicker from "@/components/StatusTicker";
 import FeedForm from "@/components/FeedForm";
 import FeedCard from "@/components/FeedCard";
 import { usePreferences } from "@/components/PreferencesProvider";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import type { Feed, FeedInput } from "@/lib/types";
 
 export default function FeedsPage() {
@@ -21,7 +21,7 @@ export default function FeedsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(apiUrl("/api/feeds"), { cache: "no-store" });
+      const res = await apiFetch("/api/feeds", { cache: "no-store" });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "Failed to load feeds");
       setFeeds(json.data);
@@ -38,7 +38,7 @@ export default function FeedsPage() {
 
   async function handleCreateOrUpdate(input: FeedInput) {
     if (editingFeed) {
-      const res = await fetch(apiUrl(`/api/feeds/${editingFeed.id}`), {
+      const res = await apiFetch(`/api/feeds/${editingFeed.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
@@ -49,7 +49,7 @@ export default function FeedsPage() {
       }
       setEditingFeed(null);
     } else {
-      const res = await fetch(apiUrl("/api/feeds"), {
+      const res = await apiFetch("/api/feeds", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
@@ -65,7 +65,7 @@ export default function FeedsPage() {
 
   async function handleDelete(id: string) {
     if (!confirm("Remove this entry from the wire?")) return;
-    const res = await fetch(apiUrl(`/api/feeds/${id}`), { method: "DELETE" });
+    const res = await apiFetch(`/api/feeds/${id}`, { method: "DELETE" });
     if (!res.ok) {
       setError("Delete failed");
       return;

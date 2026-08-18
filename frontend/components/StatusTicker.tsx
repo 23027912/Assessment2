@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { HealthStatus, CountStats } from "@/lib/types";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 // Signature element: a wire-service "signal" ticker showing live backend
 // health and request-count telemetry, polled every 5s from the API app's
@@ -17,8 +17,8 @@ export default function StatusTicker() {
     async function poll() {
       try {
         const [h, c] = await Promise.all([
-          fetch(apiUrl("/api/health")).then((r) => r.json()),
-          fetch(apiUrl("/api/count")).then((r) => r.json()),
+          apiFetch("/api/health").then((r) => r.json()),
+          apiFetch("/api/count").then((r) => r.json()),
         ]);
         if (!cancelled) {
           setHealth(h);
@@ -46,6 +46,7 @@ export default function StatusTicker() {
     `UPTIME ${health?.uptimeSeconds !== undefined ? `${Math.floor(health.uptimeSeconds)}s` : "--"}`,
     `REQUESTS ${stats?.requests.total ?? "--"}`,
     `FEEDS ${stats?.feeds.total ?? "--"}`,
+    `CLIENTS ${stats?.clients.unique ?? "--"}`,
   ];
 
   const doubled = [...items, ...items];

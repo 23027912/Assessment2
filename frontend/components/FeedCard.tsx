@@ -10,6 +10,12 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
+const STATUS_STYLE: Record<Feed["status"], string> = {
+  ACTIVE: "text-signal border-signal",
+  ERROR: "text-alert border-alert",
+  STALE: "text-muted border-muted",
+};
+
 export default function FeedCard({ feed, index, compact = false, onEdit, onDelete }: Props) {
   const date = new Date(feed.publishedAt).toLocaleString("en-AU", {
     day: "2-digit",
@@ -60,6 +66,12 @@ export default function FeedCard({ feed, index, compact = false, onEdit, onDelet
         {!compact && <p className="text-sm text-muted line-clamp-2">{feed.summary || feed.content}</p>}
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 font-mono text-[11px] text-muted">
+          <span
+            className={`inline-flex items-center gap-1 border rounded-sm px-1.5 py-0.5 ${STATUS_STYLE[feed.status]}`}
+          >
+            <span className="w-1 h-1 rounded-full bg-current" />
+            {feed.status}
+          </span>
           <span>BY {feed.author.toUpperCase()}</span>
           <span>{date}</span>
           {feed.link && (

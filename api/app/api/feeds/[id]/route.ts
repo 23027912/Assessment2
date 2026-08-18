@@ -1,69 +1,97 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { trackRequest } from "@/lib/requestCounter";
+import { trackRequest, getClientId } from "@/lib/requestCounter";
 
-type Params = { params: { id: string } };
+// GET /api/feeds - list all feeds, newest first. 
+// Supports ?author=, ?category= and ?status= filters.
+export async function GET(req: NextRequest) {
+  const clientId = getClientId(req);
+  
+  // Track request using the required TrackOptions object structure
+  await trackRequest({ route: "/api/feeds", method: "GET", clientId });
 
-// GET /api/feeds/:id - fetch a single feed
-export async function GET(_req: NextRequest, { params }: Params) {
-  await trackRequest("GET /api/feeds/:id");
+  const { searchParams } = new URL(req.url);
+  const author = searchParams.get("author");
+  const category = searchParams.get("category");
+  const status = searchParams.get("status");
 
-  const feed = await prisma.feed.findUnique({ where: { id: params.id } });
-  if (!feed) {
-    return NextResponse.json({ success: false, error: "Feed not found" }, { status: 404 });
+  // Build the database query safely
+  const whereClause: any = {};
+
+  if (author) {
+    whereClause.author = { equals: author, mode: "insensitive" };
   }
-  return NextResponse.json({ success: true, data: feed });
-}
-
-// PUT /api/feeds/:id - update an existing feed
-export async function PUT(req: NextRequest, { params }: Params) {
-  await trackRequest("PUT /api/feeds/:id");
+  if (category) {
+    whereClause.category = { equals: category, mode: "insensitive" };
+  }
+  if (status) {
+    whereClause.status = status;
+  }
 
   try {
-    const body = await req.json();
-    const { title, author, content, summary, imageUrl, link, category, publishedAt } = body;
-
-    const feed = await prisma.feed.update({
-      where: { id: params.id },
-      data: {
-        ...(title !== undefined ? { title } : {}),
-        ...(author !== undefined ? { author } : {}),
-        ...(content !== undefined ? { content } : {}),
-        ...(summary !== undefined ? { summary } : {}),
-        ...(imageUrl !== undefined ? { imageUrl } : {}),
-        ...(link !== undefined ? { link } : {}),
-        ...(category !== undefined ? { category } : {}),
-        ...(publishedAt !== undefined ? { publishedAt: new Date(publishedAt) } : {}),
-      },
+    const feeds = await prisma.feed.findMany({
+      where: whereClause,
+      orderBy: { publishedAt: "desc" },
     });
 
-    return NextResponse.json({ success: true, data: feed });
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      return NextResponse.json({ success: false, error: "Feed not found" }, { status: 404 });
-    }
-    console.error(error);
+    return NextResponse.json({ success: true, count: feeds.length, data: feeds });
+  } catch (error) {
+    console.error("Error fetching feeds:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to update feed" },
+      { success: false, error: "Failed to fetch feeds" },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/feeds/:id - remove a feed
-export async function DELETE(_req: NextRequest, { params }: Params) {
-  await trackRequest("DELETE /api/feeds/:id");
+// POST /api/feeds - create a new feed entry
+export async function POST(req: NextRequest) {
+  const clientId = getClientId(req);
+  
+  // Track request using the required TrackOptions object structure
+  await trackRequest({ route: "/api/feeds", method: "POST", clientId });
 
   try {
-    await prisma.feed.delete({ where: { id: params.id } });
-    return NextResponse.json({ success: true, message: "Feed deleted" });
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      return NextResponse.json({ success: false, error: "Feed not found" }, { status: 404 });
+    const body = await req.json();
+    const { 
+      title, 
+      author, 
+      content, 
+      summary, 
+      imageUrl, 
+      link, 
+      category, 
+      status, 
+      publishedAt 
+    } = body;
+
+    // Validate required inputs
+    if (!title || !author || !content) {
+      return NextResponse.json(
+        { success: false, error: "title, author and content are required" },
+        { status: 400 }
+      );
     }
-    console.error(error);
+
+    const feed = await prisma.feed.create({
+      data: {
+        title,
+        author,
+        content,
+        summary,
+        imageUrl,
+        link,
+        category,
+        ...(status ? { status } : {}),
+        publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
+      },
+    });
+
+    return NextResponse.json({ success: true, data: feed }, { status: 201 });
+  } catch (error) {
+    console.error("Error creating feed:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to delete feed" },
+      { success: false, error: "Failed to create feed" },
       { status: 500 }
     );
   }

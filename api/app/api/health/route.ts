@@ -16,7 +16,7 @@ export async function GET() {
       latencyMs,
       uptimeSeconds: process.uptime(),
       timestamp: new Date().toISOString(),
-    });
+    }, { status: 200 });
   } catch (error) {
     console.error("Health check failed:", error);
     return NextResponse.json(

@@ -38,7 +38,7 @@ services:
     environment:
       DATABASE_URL: postgresql://rss_user:rss_password@db:5432/rss_db
       NODE_ENV: production
-      FRONTEND_ORIGIN: http://3.90.37.120
+      FRONTEND_ORIGIN: http://3.81.143.236
     ports:
       - "4080:4000"
 
@@ -46,7 +46,7 @@ services:
     build:
       context: ./frontend
       args:
-        NEXT_PUBLIC_API_URL: http://3.90.37.120:4080
+        NEXT_PUBLIC_API_URL: http://3.81.143.236:4080
     restart: unless-stopped
     depends_on:
       - api

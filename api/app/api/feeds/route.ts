@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { trackRequest } from "@/lib/requestCounter";
+import { trackRequest, getClientId } from "@/lib/requestCounter";
 
-// GET /api/feeds - list all feeds, newest first. Supports ?author= and ?category= filters.
+// GET /api/feeds - list all feeds, newest first. Supports ?author=, ?category=
+// and ?status= filters.
 export async function GET(req: NextRequest) {
-  await trackRequest("GET /api/feeds");
+  const clientId = getClientId(req);
+  await trackRequest({ route: "/api/feeds", method: "GET", clientId });
 
   const { searchParams } = new URL(req.url);
   const author = searchParams.get("author") ?? undefined;
   const category = searchParams.get("category") ?? undefined;
+  const status = searchParams.get("status") ?? undefined;
 
   try {
     const feeds = await prisma.feed.findMany({
       where: {
         ...(author ? { author: { equals: author, mode: "insensitive" } } : {}),
         ...(category ? { category: { equals: category, mode: "insensitive" } } : {}),
+        ...(status ? { status: status as any } : {}),
       },
       orderBy: { publishedAt: "desc" },
     });
@@ -31,11 +35,13 @@ export async function GET(req: NextRequest) {
 
 // POST /api/feeds - create a new feed entry
 export async function POST(req: NextRequest) {
-  await trackRequest("POST /api/feeds");
+  const clientId = getClientId(req);
+  await trackRequest({ route: "/api/feeds", method: "POST", clientId });
 
   try {
     const body = await req.json();
-    const { title, author, content, summary, imageUrl, link, category, publishedAt } = body;
+    const { title, author, content, summary, imageUrl, link, category, status, publishedAt } =
+      body;
 
     if (!title || !author || !content) {
       return NextResponse.json(
@@ -53,6 +59,7 @@ export async function POST(req: NextRequest) {
         imageUrl,
         link,
         category,
+        ...(status ? { status } : {}),
         ...(publishedAt ? { publishedAt: new Date(publishedAt) } : {}),
       },
     });

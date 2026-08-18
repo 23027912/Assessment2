@@ -2,7 +2,15 @@
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone", // Keeps production builds minimal and lightweight
-  allowedDevOrigins: ['3.90.37.120', 'localhost', '127.0.0.1'], // change to your IP in production
+  
+  // Required structure for Next.js 14.2.5
+  experimental: {
+    allowedDevOrigins: [
+      'localhost', 
+      '127.0.0.1', 
+      '3.81.143.236', 
+    ], 
+  },
 };
 
 module.exports = nextConfig;

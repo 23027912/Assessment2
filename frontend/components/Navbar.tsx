@@ -8,6 +8,7 @@ import { usePreferences } from "./PreferencesProvider";
 const PRIMARY_LINKS = [
   { href: "/", label: "Home" },
   { href: "/feeds", label: "Feeds" },
+  { href: "/dashboard", label: "Dashboard" },
 ];
 
 // These live inside the kebab/hamburger menus specifically, per the brief:

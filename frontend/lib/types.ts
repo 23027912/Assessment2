@@ -1,3 +1,5 @@
+export type FeedStatus = "ACTIVE" | "ERROR" | "STALE";
+
 export type Feed = {
   id: string;
   title: string;
@@ -7,6 +9,7 @@ export type Feed = {
   imageUrl?: string | null;
   link?: string | null;
   category?: string | null;
+  status: FeedStatus;
   publishedAt: string;
   createdAt: string;
   updatedAt: string;
@@ -20,6 +23,7 @@ export type FeedInput = {
   imageUrl?: string;
   link?: string;
   category?: string;
+  status?: FeedStatus;
 };
 
 export type HealthStatus = {
@@ -36,9 +40,15 @@ export type CountStats = {
   requests: {
     total: number;
     byRoute: { route: string; count: number }[];
+    byFeed: { feedId: string; title: string; count: number }[];
+    byClient: { clientId: string; count: number }[];
+  };
+  clients: {
+    unique: number;
   };
   feeds: {
     total: number;
+    byStatus: Record<FeedStatus, number>;
     byCategory: { category: string; count: number }[];
     byAuthor: { author: string; count: number }[];
     latest: { id: string; title: string; publishedAt: string } | null;

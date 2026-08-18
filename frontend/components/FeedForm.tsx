@@ -17,6 +17,7 @@ const empty: FeedInput = {
   imageUrl: "",
   link: "",
   category: "",
+  status: "ACTIVE",
 };
 
 export default function FeedForm({ editingFeed, onSubmit, onCancelEdit }: Props) {
@@ -33,13 +34,14 @@ export default function FeedForm({ editingFeed, onSubmit, onCancelEdit }: Props)
         imageUrl: editingFeed.imageUrl ?? "",
         link: editingFeed.link ?? "",
         category: editingFeed.category ?? "",
+        status: editingFeed.status,
       });
     } else {
       setForm(empty);
     }
   }, [editingFeed]);
 
-  function update<K extends keyof FeedInput>(key: K, value: string) {
+  function update<K extends keyof FeedInput>(key: K, value: FeedInput[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
@@ -96,7 +98,7 @@ export default function FeedForm({ editingFeed, onSubmit, onCancelEdit }: Props)
         onChange={(e) => update("summary", e.target.value)}
       />
 
-      <div className="grid sm:grid-cols-3 gap-3">
+      <div className="grid sm:grid-cols-4 gap-3">
         <input
           className={inputClass}
           placeholder="Image URL"
@@ -115,6 +117,16 @@ export default function FeedForm({ editingFeed, onSubmit, onCancelEdit }: Props)
           value={form.category}
           onChange={(e) => update("category", e.target.value)}
         />
+        <select
+          className={inputClass}
+          value={form.status}
+          onChange={(e) => update("status", e.target.value as FeedInput["status"])}
+          aria-label="Feed status"
+        >
+          <option value="ACTIVE">Active</option>
+          <option value="ERROR">Error</option>
+          <option value="STALE">Stale</option>
+        </select>
       </div>
 
       <div className="flex gap-2 justify-end">

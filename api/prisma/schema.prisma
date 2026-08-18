@@ -12,27 +12,59 @@ datasource db {
 
 // Core entity: a single RSS feed item / post
 model Feed {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   author      String
-  content     String   @db.Text
+  content     String     @db.Text
   summary     String?
   imageUrl    String?
   link        String?
   category    String?
-  publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      FeedStatus @default(ACTIVE)
+  publishedAt DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  requestLogs RequestLog[]
 
   @@index([publishedAt])
   @@index([author])
+  @@index([status])
 }
 
-// Single-row counter used by the /api/count operational endpoint.
-// Incremented by the requestCounter helper on every API call.
+// Feed health/status, used for the Assessment 3 dashboard's feed status
+// summary (e.g. "how many feeds are active vs erroring vs stale").
+enum FeedStatus {
+  ACTIVE
+  ERROR
+  STALE
+}
+
+// Single-row counter used by the /api/count operational endpoint for a
+// cheap running total per route. Kept alongside RequestLog (below), which
+// captures per-request detail for the richer Assessment 3 metrics.
 model RequestStat {
   id        Int      @id @default(autoincrement())
   route     String   @unique
   count     Int      @default(0)
   updatedAt DateTime @updatedAt
+}
+
+// One row per API request. This is what powers "requests per feed",
+// "requests per client", and "unique client count" on the Assessment 3
+// dashboard — RequestStat alone can't answer those, since it only tracks
+// route-level totals with no per-request detail.
+model RequestLog {
+  id        Int      @id @default(autoincrement())
+  route     String
+  method    String
+  clientId  String
+  feedId    String?
+  feed      Feed?    @relation(fields: [feedId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([route])
+  @@index([clientId])
+  @@index([feedId])
+  @@index([createdAt])
 }

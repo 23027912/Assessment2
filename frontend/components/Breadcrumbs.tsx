@@ -7,6 +7,7 @@ const LABELS: Record<string, string> = {
   feeds: "Feeds",
   about: "About",
   settings: "Settings",
+  dashboard: "Dashboard",
 };
 
 export default function Breadcrumbs() {
