@@ -108,14 +108,15 @@ export default function Navbar() {
 
             <div
               id="kebab-menu"
-              role="menu"
-              aria-label="More"
               className={`absolute right-0 mt-2 w-44 origin-top-right border border-border bg-surface rounded-sm shadow-lg overflow-hidden transition-all duration-150 ${
                 kebabOpen
                   ? "opacity-100 scale-100 pointer-events-auto"
                   : "opacity-0 scale-95 pointer-events-none"
               }`}
             >
+              {/* Header row is deliberately outside role="menu" below — ARIA's
+                  menu role only permits menuitem/group as direct children, so
+                  this plain header can't live inside that scope. */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-border">
                 <span className="font-mono text-[10px] tracking-widest text-muted">MENU</span>
                 <button
@@ -128,31 +129,34 @@ export default function Navbar() {
                   </span>
                 </button>
               </div>
-              {COMPACT_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
+
+              <div role="menu" aria-label="More">
+                {COMPACT_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    role="menuitem"
+                    onClick={() => setKebabOpen(false)}
+                    className={`block font-mono text-xs tracking-widest px-4 py-3 ${
+                      isActive(link.href)
+                        ? "text-signal bg-surface2"
+                        : "text-muted hover:text-ink hover:bg-surface2"
+                    }`}
+                  >
+                    {link.label.toUpperCase()}
+                  </Link>
+                ))}
+                <button
                   role="menuitem"
-                  onClick={() => setKebabOpen(false)}
-                  className={`block font-mono text-xs tracking-widest px-4 py-3 ${
-                    isActive(link.href)
-                      ? "text-signal bg-surface2"
-                      : "text-muted hover:text-ink hover:bg-surface2"
-                  }`}
+                  onClick={() => {
+                    toggleTheme();
+                    setKebabOpen(false);
+                  }}
+                  className="w-full text-left font-mono text-xs tracking-widest px-4 py-3 text-muted hover:text-ink hover:bg-surface2 border-t border-border"
                 >
-                  {link.label.toUpperCase()}
-                </Link>
-              ))}
-              <button
-                role="menuitem"
-                onClick={() => {
-                  toggleTheme();
-                  setKebabOpen(false);
-                }}
-                className="w-full text-left font-mono text-xs tracking-widest px-4 py-3 text-muted hover:text-ink hover:bg-surface2 border-t border-border"
-              >
-                {theme === "dark" ? "☀ LIGHT MODE" : "☾ DARK MODE"}
-              </button>
+                  {theme === "dark" ? "☀ LIGHT MODE" : "☾ DARK MODE"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

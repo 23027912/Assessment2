@@ -43,9 +43,20 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 
-# ADDED: Explicitly pull standard Prisma engine folders for the standalone build
+# Prisma engine + generated client (needed to actually run queries)
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# NOTE: the Prisma CLI itself is deliberately NOT included here. For
+# `prisma migrate deploy`/`migrate status`/`studio`, use the `migrate`
+# service in docker-compose.yml instead (it builds to the `builder` stage,
+# which has the full node_modules the CLI needs):
+#
+#   docker-compose run --rm migrate npx prisma migrate status
+#
+# This runner stage only needs the generated client above to serve requests
+# — pulling in the full CLI here just to run occasional admin commands isn't
+# worth the added image size/fragility.
 
 USER nextjs
 
