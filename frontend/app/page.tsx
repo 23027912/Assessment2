@@ -56,7 +56,7 @@ export default function HomePage() {
           ].map((item) => (
             <div key={item.step} className="border border-border bg-surface rounded-sm p-5">
               <p className="font-mono text-[11px] text-signal tracking-widest">{item.step}</p>
-              <h3 className="font-semibold text-lg mt-2">{item.title}</h3>
+              <h2 className="font-semibold text-lg mt-2">{item.title}</h2>
               <p className="text-sm text-muted mt-2 leading-relaxed">{item.body}</p>
             </div>
           ))}

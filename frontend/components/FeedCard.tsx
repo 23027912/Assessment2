@@ -1,6 +1,7 @@
 "use client";
 
 import type { Feed } from "@/lib/types";
+import { Http2ServerRequest } from "http2";
 
 type Props = {
   feed: Feed;
@@ -41,9 +42,9 @@ export default function FeedCard({ feed, index, compact = false, onEdit, onDelet
             <p className="font-mono text-[11px] text-signal tracking-widest">
               {String(index + 1).padStart(3, "0")} {feed.category ? `// ${feed.category.toUpperCase()}` : ""}
             </p>
-            <h3 className="font-sans font-semibold text-lg leading-snug mt-1 truncate">
+            <h2 className="font-sans font-semibold text-lg leading-snug mt-1 truncate">
               {feed.title}
-            </h3>
+            </h2>
           </div>
           <div className="flex gap-2 shrink-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity">
             <button
