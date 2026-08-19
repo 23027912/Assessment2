@@ -18,14 +18,37 @@ services:
 
   migrate:
     build:
-      context: ./api     
+      context: ./api
       target: builder # FIXED: Changed from deps to builder so prisma.config.js is included
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://rss_user:rss_password@db:5432/rss_db   
+      DATABASE_URL: postgresql://rss_user:rss_password@db:5432/rss_db
     entrypoint: ["sh", "-c", "npx prisma migrate deploy"]
+
+  # Prisma Studio, reachable in a real browser at http://<EC2_PUBLIC_IP>:5555
+  # NOTE: no --hostname flag — not a valid option on this Prisma version
+  # (7.9.1), and Studio already binds to all interfaces by default. --browser
+  # none stops it trying (and failing) to launch a GUI browser in the
+  # headless container.
+  # NOT for leaving running long-term: it has no auth of its own and gives
+  # full read/write access to the database. Start it only when you need it:
+  #   sudo docker-compose up -d studio
+  # and stop it again afterwards:
+  #   sudo docker-compose stop studio
+  studio:
+    build:
+      context: ./api
+      target: builder
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://rss_user:rss_password@db:5432/rss_db
+    entrypoint: ["sh", "-c", "npx prisma studio --port 5555 --browser none"]
+    ports:
+      - "5555:5555"
 
   api:
     build: ./api
